@@ -1,0 +1,2 @@
+1.初始化VUE CLI3，并用GIT进行管理，Git add .，Git commit，Git push。
+创立相关文件夹，router，network，store等，引入normalize.css模块
