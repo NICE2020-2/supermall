@@ -1,8 +1,6 @@
 <template>
-  <div class="wrapper" ref="wrapper">
-    <div class="content">
-      <slot></slot>
-    </div>
+  <div ref="wrapper">
+    <slot></slot>
   </div>
 </template>
 <script>
@@ -13,26 +11,26 @@ export default {
   props: {
     probeType: {
       type: Number,
-      default: 0
+      default: 0,
     },
     pullUpLoad: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
-      scroll: null
+      scroll: null,
     };
   },
   mounted() {
     this.scroll = new BSscroll(this.$refs.wrapper, {
       click: true,
       probeType: this.probeType,
-      pullUpLoad: this.pullUpLoad
+      pullUpLoad: this.pullUpLoad,
     });
 
-    this.scroll.on("scroll", position => {
+    this.scroll.on("scroll", (position) => {
       this.$emit("scroll", position);
     });
 
@@ -48,9 +46,15 @@ export default {
       this.scroll && this.scroll.finishPullUp();
     },
     refresh() {
+      // console.log("-----");
       this.scroll && this.scroll.refresh();
-    }
-  }
+    },
+  },
+  watch: {
+    data() {
+      setTimeout(this.refresh, 20);
+    },
+  },
 };
 </script>
 <style scoped>

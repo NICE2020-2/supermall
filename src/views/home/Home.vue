@@ -19,11 +19,13 @@
       :pull-up-load="true"
       @pullingUp="loadMore"
     >
-      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad " />
-      <HomeRecommendView :recommends="recommends" />
-      <feature-view />
-      <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" ref="tabControl2" />
-      <goods-list :goods="showGoods" />
+      <div>
+        <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad " />
+        <HomeRecommendView :recommends="recommends" />
+        <feature-view />
+        <tab-control :titles="['流行','新款','精选']" @tabClick="tabClick" ref="tabControl2" />
+        <goods-list :goods="showGoods" />
+      </div>
     </scroll>
     <back-top @click.native="backClick" v-show="isShowBackTop" />
   </div>
@@ -52,7 +54,7 @@ export default {
     TabControl,
     GoodsList,
     Scroll,
-    BackTop
+    BackTop,
   },
   data() {
     return {
@@ -61,20 +63,20 @@ export default {
       goods: {
         pop: { page: 0, list: [] },
         new: { page: 0, list: [] },
-        sell: { page: 0, list: [] }
+        sell: { page: 0, list: [] },
       },
       currentType: "pop",
       isShowBackTop: false,
       TabOffsetTop: 0,
       isTabFixed: false,
       saveY: 0,
-      itemImgListener: null
+      itemImgListener: null,
     };
   },
   computed: {
     showGoods() {
       return this.goods[this.currentType].list;
-    }
+    },
   },
   created() {
     this.getHomeMultidata();
@@ -90,29 +92,31 @@ export default {
     this.$bus.$on("itemImageLoad", this.itemImgListener);
   },
   activated() {
-    this.$refs.scroll.scrollTo(0, this.saveY, 0);
     this.$refs.scroll.refresh();
+    this.$refs.scroll.scrollTo(0, this.saveY, 0);
+    // console.log(this.saveY);
   },
   deactivated() {
     this.saveY = this.$refs.scroll.scroll.y;
+    // 离开home后取消监听
     this.$bus.$off("itemImgListener", this.itemImgListener);
+    // console.log(this.saveY);
   },
   methods: {
     /**
      * 网络请求相关方法
      */
     getHomeMultidata() {
-      getHomeMultidata().then(res => {
+      getHomeMultidata().then((res) => {
         this.banners = res.data.banner.list;
         this.recommends = res.data.recommend.list;
       });
     },
     getHomeGoods(type) {
       const page = this.goods[type].page + 1;
-      getHomeGoods(type, page).then(res => {
+      getHomeGoods(type, page).then((res) => {
         this.goods[type].list.push(...res.data.list);
         this.goods[type].page += 1;
-        console.log(this.goods);
         this.$refs.scroll.finishPullUp();
       });
     },
@@ -151,8 +155,8 @@ export default {
     },
     swiperImageLoad() {
       this.TabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
-    }
-  }
+    },
+  },
 };
 </script>
 

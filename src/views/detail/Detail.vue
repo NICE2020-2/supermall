@@ -2,13 +2,15 @@
   <div id="detail">
     <detail-nav-bar class="detail-nav" @tClick="tClick" ref="nav" />
     <scroll class="content" ref="scroll" @scroll="contentScroll" :probe-type="3">
-      <detail-swiper :top-images="topImages" />
-      <detail-base-info :goods="goods" />
-      <detail-shop-info :shop="shop" />
-      <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad" />
-      <detail-param-info :param-info="paramInfo" ref="param" />
-      <detail-comment-info :comment-info="commentInfo" ref="comment" />
-      <goods-list :goods="recommends" ref="recommend" />
+      <div>
+        <detail-swiper :top-images="topImages" />
+        <detail-base-info :goods="goods" />
+        <detail-shop-info :shop="shop" />
+        <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad" />
+        <detail-param-info :param-info="paramInfo" ref="param" />
+        <detail-comment-info :comment-info="commentInfo" ref="comment" />
+        <goods-list :goods="recommends" ref="recommend" />
+      </div>
     </scroll>
     <back-top @click.native="backClick" v-show="isShowBackTop" />
     <detail-bottom-bar @addCart="addToCart" />
@@ -64,12 +66,13 @@ export default {
       itemImgListener: null,
       themeTopYs: [],
       currentIndex: 0,
+      getThemeTopYs: null,
     };
   },
   created() {
     this.iid = this.$route.params.iid;
     getDetail(this.iid).then((res) => {
-      console.log(res);
+      // console.log(res);
 
       const data = res.result;
       this.topImages = data.itemInfo.topImages;
@@ -96,17 +99,21 @@ export default {
     getRecommend().then((res) => {
       this.recommends = res.data.list;
     });
-  },
-  methods: {
-    imageLoad() {
-      this.$refs.scroll.refresh();
-
-      //  每次图片加载完都获取元素
+    this.getThemeTopYs = debounce(() => {
       this.themeTopYs.push(0);
       this.themeTopYs.push(this.$refs.param.$el.offsetTop - 44);
       this.themeTopYs.push(this.$refs.comment.$el.offsetTop - 44);
       this.themeTopYs.push(this.$refs.recommend.$el.offsetTop - 44);
       console.log(this.themeTopYs);
+    });
+  },
+  methods: {
+    imageLoad() {
+      // debounce(this.$refs.scroll.refresh(), 1000);
+      this.$refs.scroll.refresh();
+      //  每次图片加载完都获取元素
+      this.getThemeTopYs();
+      // this.$refs.scroll.refresh();
     },
     tClick(index) {
       this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 200);
@@ -124,7 +131,7 @@ export default {
             (i === length - 1 && positionY >= this.themeTopYs[i]))
         ) {
           this.currentIndex = i;
-          console.log(this.currentIndex);
+          // console.log(this.currentIndex);
           this.$refs.nav.currentIndex = this.currentIndex;
         }
       }
