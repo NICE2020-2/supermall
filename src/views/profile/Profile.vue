@@ -1,9 +1,9 @@
 <template>
-  <div>我的</div>
+  <div>我的信息</div>
 </template>
 <script>
 export default {
-  name: "Profile"
+  name: "Profile",
 };
 </script>
 <style scoped>
